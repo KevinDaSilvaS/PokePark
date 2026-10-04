@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+    <div id="pokespace">
+        <div class="pokecard" id="Rx59sj4" onclick="toggleStats(this)">
+            <div class="stats">
+                <h3 id="name-Rx59sj4">Mudkip</h3>
+                <p>TrainerId: Rx59sj4=</p>
+                <p>GameId: Rx55ah8=</p>
+            </div>
+            <h3 class="evo" id="evolving-Rx59sj4">Evolviiing Mudkip!!!</h3>
+            <img class="pokecard_img" id="sprite-Rx59sj4" src="normal/mudkip.gif" alt="">
+        </div>
+    </div>
+   
+</body>
+<style>
+    body {
+        background-image: url("bush.png");
+        background-size: 30px 30px;
+        background-color: green;
+    }
+
+    #pokespace {
+        padding: 5%;
+        display: flex;
+        flex-wrap: wrap;
+    }
+
+    .pokecard {
+        flex: 1 1 200px; 
+        transition: transform 15s ease-out;
+        position: absolute;
+        
+    }
+
+    .pokecard_img {
+        filter: drop-shadow(5px 5px 10px rgba(0, 0, 0, 0.5));
+        width: 150px;
+        height: 150px;
+    }
+
+    .stats {
+        background-color: white;
+        padding: 1%;
+        display: none;
+        position: fixed;
+        bottom: 80%;
+    }
+
+    .evo {
+        background-color: rgb(195, 195, 243);
+        padding: 1%;
+        display: none;
+        position: fixed;
+        bottom: 80%;
+    }
+
+    p {
+        padding-left: 0.5%;
+    }
+</style>
+
+<script>
+    const walkingmons = () => {
+        const mons = document.getElementsByClassName("pokecard")
+        for (const mon of mons) {
+            const bounds = mon.getBoundingClientRect()
+            const x = Math.floor(Math.random() * (window.innerWidth/4)) - 1
+            const y = Math.floor(Math.random() * (window.innerHeight/1.2)) - 1
+
+            mon.style.transform = `translate(${x}px, ${y}px)`;
+        }
+    }
+
+    setInterval(walkingmons, 200)
+
+    const toggleStats = (elem) => {
+        const stats = elem.getElementsByClassName("stats")[0]
+        const statsDisplayStatus = window.getComputedStyle(stats).display;
+
+        if (statsDisplayStatus === 'none') {
+            stats.style.display = 'block';
+        } else {
+            stats.style.display = 'none';
+        }
+    }
+
+    const createMon = (data) => {
+        const root = document.getElementById("pokespace")
+        const folder = data.lastName.toLowerCase() == "shiny" ? "shiny" : "normal"
+        root.innerHTML += `
+            <div class="pokecard" id="${data.id}" onclick="toggleStats(this)">
+                <div class="stats">
+                    <h3 id="name-${data.id}">${data.name}</h3>
+                    <p>TrainerId: ${data.id}</p>
+                    <p>GameId: ${data.eventId}</p>
+                </div>
+                <h3 class="evo" id="evolving-${data.id}" >Evolviiing ${data.name}!!!</h3>
+                <img class="pokecard_img" id="sprite-${data.id}" src="${folder}/${data.name.toLowerCase()}.gif" alt="${data.name.toLowerCase()}">
+            </div>
+        `
+    }
+
+    const evolveMon = (data) => {
+        const id = data.id
+        const folder = data.lastName.toLowerCase() == "shiny" ? "shiny" : "normal"
+        const name = data.name
+
+        const evoTextElem = document.getElementById(`evolving-${data.id}`)
+        evoTextElem.style.display = 'block';
+
+        setTimeout(() => {
+            evoTextElem.style.display = 'none'
+            document.getElementById(`sprite-${data.id}`).src = `${folder}/${name.toLowerCase()}.gif`
+            document.getElementById(`name-${data.id}`).innerText = name
+        }, 1800)
+
+    }
+
+    const removeMon = (data) => {
+        const evoTextElem = document.getElementById(`evolving-${data.id}`)
+        evoTextElem.innerText = `${data.name} gotta go, byeeeee!`
+        evoTextElem.style.display = 'block';
+        setTimeout(() => {
+            document.getElementById(`${data.id}`).remove()
+        }, 1800)
+        
+    }
+</script>
+
+<script src="/socket.io/socket.io.js"></script>
+<script>
+  const socket = io();
+
+  socket.on('create', (msg) => {
+    createMon(msg)
+  });
+</script>
+</html>
