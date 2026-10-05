@@ -8,17 +8,7 @@
 
 <body>
     <div id="pokespace">
-        <div class="pokecard" id="Rx59sj4" onclick="toggleStats(this)">
-            <div class="stats">
-                <h3 id="name-Rx59sj4">Mudkip</h3>
-                <p>TrainerId: Rx59sj4=</p>
-                <p>GameId: Rx55ah8=</p>
-            </div>
-            <h3 class="evo" id="evolving-Rx59sj4">Evolviiing Mudkip!!!</h3>
-            <img class="pokecard_img" id="sprite-Rx59sj4" src="normal/mudkip.gif" alt="">
-        </div>
     </div>
-   
 </body>
 <style>
     body {
@@ -118,6 +108,7 @@
 
         setTimeout(() => {
             evoTextElem.style.display = 'none'
+            evoTextElem.innerText = `Evolviiing ${data.name}!!!`
             document.getElementById(`sprite-${data.id}`).src = `${folder}/${name.toLowerCase()}.gif`
             document.getElementById(`name-${data.id}`).innerText = name
         }, 1800)
@@ -141,6 +132,14 @@
 
   socket.on('create', (msg) => {
     createMon(msg)
+  });
+
+  socket.on('update', (msg) => {
+    evolveMon(msg)
+  });
+
+  socket.on('delete', (msg) => {
+    removeMon(msg)
   });
 </script>
 </html>

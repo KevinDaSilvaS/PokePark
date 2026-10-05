@@ -18,15 +18,48 @@ io.on('connection', (socket) => {
   console.log('a user connected');
 });
 
+app.use(express.json());
 app.use(express.static(path.join(__dirname, 'assets')));
 
 app.get('/', (req, res) => {
     res.sendFile(path.join(__dirname, 'assets', 'index.html')); 
 });
 
-app.post('/create', (req, res) => {
-    io.emit('create', {"name": "volbeat", "lastName": "shiny", "id": "oioioi", "eventId": "eventId"}); 
-    res.send('ok')
+app.post('/payload', (req, res) => {
+  const body = req.body
+
+  const { first_name, last_name } = body.event_profile.community_profile
+  const { id, event_id } = body.event_profile
+  switch (body.action) {
+    case "profile_create":
+      io.emit('create', {
+        "name": first_name, 
+        "lastName": last_name, 
+        "id": id, 
+        "eventId": event_id
+      }); 
+      break;
+    case "profile_update":
+      io.emit('update', {
+        "name": first_name, 
+        "lastName": last_name, 
+        "id": id, 
+        "eventId": event_id
+      }); 
+      break;
+    case "profile_delete":
+      io.emit('delete', {
+        "name": first_name, 
+        "lastName": last_name, 
+        "id": id, 
+        "eventId": event_id
+      }); 
+      break;
+    default:
+      break;
+  }
+  
+  res.send('ok')
 })
 
 server.listen(port, () => {
