@@ -3,8 +3,6 @@ import path from "path";
 import { fileURLToPath } from 'url';
 import { createServer } from 'node:http';
 import { Server } from 'socket.io';
-import { loadEnvFile } from 'node:process';
-loadEnvFile();
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
